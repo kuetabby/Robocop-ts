@@ -6,7 +6,21 @@ import Scroll from "../components/Scroll";
 import { setSearchField, requestRobots } from "../actions";
 import "./App.css";
 
-const mapStateToProps = state => {
+interface StateProps {
+  searchField: string;
+  robots: Array<{
+    id: number;
+    name: string;
+    username: string;
+    email: string;
+  }>;
+  error: string;
+  isPending: boolean;
+  onRequestRobot: any;
+  onSearchChange: any;
+}
+
+const mapStateToProps = (state: any) => {
   return {
     searchField: state.searchRobots.searchField,
     robots: state.requestRobots.robots,
@@ -15,19 +29,27 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch: any) => {
   return {
-    onSearchChange: event => dispatch(setSearchField(event.target.value)),
+    onSearchChange: (event: any) =>
+      dispatch(setSearchField(event.target.value)),
     onRequestRobot: () => dispatch(requestRobots())
   };
 };
 
-function App(props) {
-  useEffect(() => {
-    props.onRequestRobot();
-  }, []);
+function App(props: StateProps) {
+  const {
+    searchField,
+    robots,
+    isPending,
+    onSearchChange,
+    onRequestRobot
+  } = props;
 
-  const { searchField, robots, isPending, onSearchChange } = props;
+  useEffect(() => {
+    onRequestRobot();
+  }, [onRequestRobot]);
+
   const filteredRobot = robots.filter(robot => {
     return robot.name.toLowerCase().includes(searchField.toLowerCase());
   });
