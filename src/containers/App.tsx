@@ -1,13 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import RoboList from "../components/RoboList";
 import SearchBox from "../components/SearchBox";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Scroll from "../components/Scroll";
 import { setSearchField, requestRobots } from "../actions";
 import "./App.css";
 
-interface StateProps {
-  searchField: string;
+interface robots {
   robots: Array<{
     id: number;
     name: string;
@@ -16,39 +15,34 @@ interface StateProps {
   }>;
   error: string;
   isPending: boolean;
-  onRequestRobot: any;
-  onSearchChange: any;
 }
 
-const mapStateToProps = (state: any) => {
-  return {
-    searchField: state.searchRobots.searchField,
-    robots: state.requestRobots.robots,
-    error: state.requestRobots.error,
-    isPending: state.requestRobots.isPending
-  };
-};
+interface search {
+  searchField: string;
+}
+interface StateProps {
+  requestRobots: robots;
+  searchRobots: search;
+}
 
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    onSearchChange: (event: any) =>
-      dispatch(setSearchField(event.target.value)),
-    onRequestRobot: () => dispatch(requestRobots())
-  };
-};
-
-function App(props: StateProps) {
-  const {
-    searchField,
-    robots,
-    isPending,
-    onSearchChange,
-    onRequestRobot
-  } = props;
+function App() {
+  const robots = useSelector((state: StateProps) => state.requestRobots.robots);
+  const isPending = useSelector(
+    (state: StateProps) => state.requestRobots.isPending
+  );
+  const searchField = useSelector(
+    (state: StateProps) => state.searchRobots.searchField
+  );
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    onRequestRobot();
-  }, [onRequestRobot]);
+    dispatch(requestRobots());
+  }, [dispatch]);
+
+  const onSearchChange = useCallback(
+    e => dispatch(setSearchField(e.target.value)),
+    [dispatch]
+  );
 
   const filteredRobot = robots.filter(robot => {
     return robot.name.toLowerCase().includes(searchField.toLowerCase());
@@ -71,7 +65,4 @@ function App(props: StateProps) {
   }
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(App);
+export default App;
