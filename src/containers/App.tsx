@@ -55,7 +55,7 @@ function App() {
       <div className="tc">
         <h1 className="f2"> Robocop </h1>
 
-        <SearchBox searchChange={onSearchChange} />
+        <SearchBox searchChange={onSearchChange} values={searchField} />
 
         <Scroll>
           <RoboList robots={filteredRobot} />
